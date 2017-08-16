@@ -1,0 +1,21 @@
+<launch>
+  <node name="find_grasps" pkg="rail_agile" type="find_grasps" output="screen">
+    <param name="svm_file_name" value="$(find agile_grasp)/svm_032015_20_20_same" />
+    <param name="num_samples" value="1000" />
+    <param name="num_threads" value="4" />
+    <param name="num_clouds" value="1" />
+    <param name="finger_width" value="0.014" />
+    <param name="hand_outer_diameter" value="0.08493125" /> <!-- measured inside-of-finger to inside-of-finger -->
+    <param name="hand_depth" value="0.021" />
+    <param name="init_bite" value="0.005" />
+    <param name="hand_height" value="0.037" />
+    <rosparam param="workspace"> [-0.4, 0.4, -0.3, 0.3, 0.45, 1.05] </rosparam>
+    <rosparam param="camera_pose"> [1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1] </rosparam>
+    <param name="min_inliers" value="1" />
+    <param name="plotting" value="2" />
+    <param name="marker_lifetime" value="0.0" />
+  </node>
+</launch>

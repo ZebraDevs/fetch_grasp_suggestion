@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<package>
+  <name>rail_agile</name>
+  <version>0.7.2</version>
+  <description>Changes to the AGILE ros package for use by the RAIL lab. AGILE stands for Antipodal Grasp Identification
+  and LEarning. The package finds antipodal grasps in point clouds.  This package has been modified with a different
+  workflow to access grasp identification through ROS action servers, with a point cloud as the goal and a list of grasp
+  poses that comply with the geometry_msgs package as the result.</description>
+  <maintainer email="dekent@gatech.edu">David Kent</maintainer>
+  <license>BSD</license>
+  <url type="website">https://github.com/GT-RAIL/rail_agile</url>
+  <author>Andreas ten Pas</author>
+  <author email="dekent@gatech.edu">David Kent</author>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+ 
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>eigen_conversions</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>liblapack-dev</build_depend>
+  <build_depend>libpcl-all-dev</build_depend>
+  <build_depend>message_generation</build_depend>   
+  <build_depend>roscpp</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>rail_grasp_calculation_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>tf_conversions</build_depend>
+  
+  <run_depend>cmake_modules</run_depend>
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>eigen_conversions</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>liblapack-dev</run_depend>
+  <run_depend>libpcl-all</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>pcl_conversions</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>visualization_msgs</run_depend>  
+  <run_depend>actionlib</run_depend>
+  <run_depend>actionlib_msgs</run_depend>
+  <run_depend>rail_grasp_calculation_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>tf_conversions</run_depend>
+
+</package>
