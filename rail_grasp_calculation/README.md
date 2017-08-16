@@ -25,8 +25,8 @@ section, depending on the grasp density.
 * [rail_grasp_calculation_msgs](#rail_grasp_calculation_msgs)
 * [rail_grasp_calculation_nodes](#rail_grasp_calculation_nodes)
   * [grasp_sampler](#grasp_sampler)
-* [Installation](#Installation)
-* [Usage](#Usage)
+* [Installation](#installation)
+* [Usage](#usage)
  
 
 ## rail_grasp_calculation_msgs
@@ -42,7 +42,7 @@ the given point cloud within the given workspace.  For an example, see the [rail
 package.
 
 ## rail_grasp_calculation_nodes
-The primary node of this package, [grasp_sampler](#grasp_sampler), implements grasp clustering and ranking based on a
+The primary node of this package, [grasp_sampler](#grasp-sampler), implements grasp clustering and ranking based on a
 set of heuristics designed to select effective grasps for man-made objects.  More details on the heuristics used for the
 point-of-interest (POI) method can be found in our paper, A Comparison of Remote Robot Teleoperation Interfaces for
 General Object Manipulation, published in HRI2017.  More details on the heuristics used for the object and scene methods
