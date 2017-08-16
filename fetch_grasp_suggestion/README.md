@@ -4,25 +4,25 @@ Supervised and autonomous grasp suggestion for objects based on their presently 
 ## Description
 This package includes a framework that requests grasps from a grasp sampler that implements the SuggestGrasps action
 found in [rail_grasp_calculation_msgs](https://github.com/GT-RAIL/rail_grasp_calculation), ranks them using the
-RankGrasps action implemented in [rail_grasp_calculation], and refines the ranking by using a pairwise grasp ranking
+RankGrasps action implemented in [rail_grasp_calculation](https://github.com/GT-RAIL/rail_grasp_calculation), and refines the ranking by using a pairwise grasp ranking
 formulation.  The package also includes functionality to collect new training examples for the pairwise ranking model,
 scripts to retrain the model, and scripts to comprehensively evaluate different pairwise ranking models.  Additionally,
 the package includes supporting nodes to run demos and perform physical execution of the suggested grasps on a Fetch
 robot.
 
-If you'd like to get the package up and running quickly, follow the [installation instructions](#Installation) and one
-of the [examples](#Example Usage) below that fits your use case.  If you'd like more detailed information about
-everything available in this package, we also include [detailed documentation of all functionality](#Detailed node and script documentation)
+If you'd like to get the package up and running quickly, follow the [installation instructions](#installation) and one
+of the [examples](#example-usage) below that fits your use case.  If you'd like more detailed information about
+everything available in this package, we also include [detailed documentation of all functionality](#detailed-node-and-script-documentation)
 at the end of this page.
 
 ## Menu
-* [Installation](#Installation)
-* [Example Usage](#Example Usage)
-* [Detailed node and script documentation](#Detailed node and script documentation)
-  * [Primary ROS nodes](#Primary ROS nodes)
-  * [Supporting ROS nodes](#Supporting ROS nodes)
-  * [Demo ROS nodes](#Demo ROS nodes)
-  * [Classifier training and evaluation scripts](#Classifier training and evaluation scripts)
+* [Installation](#installation)
+* [Example Usage](#example-usage)
+* [Detailed node and script documentation](#detailed-node-and-script-documentation)
+  * [Primary ROS nodes](#primary-ros-nodes)
+  * [Supporting ROS nodes](#supporting-ros-nodes)
+  * [Demo ROS nodes](#demo-ros-nodes)
+  * [Classifier training and evaluation scripts](#classifier-training-and-evaluation-scripts)
 
 ## Installation
 This package requires [scikit-learn](http://scikit-learn.org/stable/index.html).  Installation instructions can be found
