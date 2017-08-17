@@ -10,19 +10,25 @@ scripts to retrain the model, and scripts to comprehensively evaluate different 
 the package includes supporting nodes to run demos and perform physical execution of the suggested grasps on a Fetch
 robot.
 
-If you'd like to get the package up and running quickly, follow the [installation instructions](#Installation) and one
-of the [examples](#Example Usage) below that fits your use case.  If you'd like more detailed information about
-everything available in this package, we also include [detailed documentation of all functionality](#Detailed node and script documentation)
+If you'd like to get the package up and running quickly, follow the [installation instructions](#installation) and one
+of the [examples](#example-usage) below that fits your use case.  If you'd like more detailed information about
+everything available in this package, we also include [detailed documentation of all functionality](#detailed-node-and-script-documentation)
 at the end of this page.
 
 ## Menu
-* [Installation](#Installation)
-* [Example Usage](#Example Usage)
-* [Detailed node and script documentation](#Detailed node and script documentation)
-  * [Primary ROS nodes](#Primary ROS nodes)
-  * [Supporting ROS nodes](#Supporting ROS nodes)
-  * [Demo ROS nodes](#Demo ROS nodes)
-  * [Classifier training and evaluation scripts](#Classifier training and evaluation scripts)
+* [Installation](#installation)
+* [Example Usage](#example-usage)
+  * [Grasping individual objects](#grasping-individual-objects)
+  * [Clearing a cluttered scene without object segmentation](#clearing-a-cluttered-scene-without-object-segmentation)
+  * [Collecting new grasp preference training data](#collecting-new-grasp-preference-training-data)
+  * [Training a new classifier](#training-a-new-classifier)
+  * [Evaluating alternative classifiers](#evaluating-alternative-classifiers)
+  * [Connecting alternative object segmentation](#connecting-alternative-object-segmentation)
+* [Detailed node and script documentation](#detailed-node-and-script-documentation)
+  * [Primary ROS nodes](#primary-ros-nodes)
+  * [Supporting ROS nodes](#supporting-ros-nodes)
+  * [Demo ROS nodes](#demo-ros-nodes)
+  * [Classifier training and evaluation scripts](#classifier-training-and-evaluation-scripts)
 
 ## Installation
 This package requires [scikit-learn](http://scikit-learn.org/stable/index.html).  Installation instructions can be found
