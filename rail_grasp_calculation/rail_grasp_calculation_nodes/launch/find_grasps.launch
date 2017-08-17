@@ -5,9 +5,6 @@
   <arg name="cluster_size" default="5" />
   <arg name="local_window_size" default="0.015" />
 
-  <arg name="point_cloud_topic" default="/camera/depth_registered/points" />
-  <arg name="point_cloud_frame" default="camera_rgb_optical_frame" />
-
   <arg name="num_samples" default="2000" />
 
   <!-- note: hand parameter defaults are measurements of the robotiq-85 gripper -->
@@ -19,8 +16,6 @@
 
   <!-- Agile grasp -->
   <node name="find_grasps" pkg="rail_agile" type="find_grasps" output="screen">
-    <param name="cloud_topic" value="$(arg point_cloud_topic)" />
-    <param name="cloud_frame" value="$(arg point_cloud_frame)" />
     <param name="cloud_type" value="0" />
     <param name="svm_file_name" value="$(find rail_agile)/svm_032015_20_20_same" />
     <param name="num_samples" value="$(arg num_samples)" />

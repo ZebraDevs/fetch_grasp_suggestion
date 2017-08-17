@@ -4,25 +4,25 @@ Supervised and autonomous grasp suggestion for objects based on their presently 
 ## Description
 This package includes a framework that requests grasps from a grasp sampler that implements the SuggestGrasps action
 found in [rail_grasp_calculation_msgs](https://github.com/GT-RAIL/rail_grasp_calculation), ranks them using the
-RankGrasps action implemented in [rail_grasp_calculation](https://github.com/GT-RAIL/rail_grasp_calculation), and refines the ranking by using a pairwise grasp ranking
+RankGrasps action implemented in [rail_grasp_calculation], and refines the ranking by using a pairwise grasp ranking
 formulation.  The package also includes functionality to collect new training examples for the pairwise ranking model,
 scripts to retrain the model, and scripts to comprehensively evaluate different pairwise ranking models.  Additionally,
 the package includes supporting nodes to run demos and perform physical execution of the suggested grasps on a Fetch
 robot.
 
-If you'd like to get the package up and running quickly, follow the [installation instructions](#installation) and one
-of the [examples](#example-usage) below that fits your use case.  If you'd like more detailed information about
-everything available in this package, we also include [detailed documentation of all functionality](#detailed-node-and-script-documentation)
+If you'd like to get the package up and running quickly, follow the [installation instructions](#Installation) and one
+of the [examples](#Example Usage) below that fits your use case.  If you'd like more detailed information about
+everything available in this package, we also include [detailed documentation of all functionality](#Detailed node and script documentation)
 at the end of this page.
 
 ## Menu
-* [Installation](#installation)
-* [Example Usage](#example-usage)
-* [Detailed node and script documentation](#detailed-node-and-script-documentation)
-  * [Primary ROS nodes](#primary-ros-nodes)
-  * [Supporting ROS nodes](#supporting-ros-nodes)
-  * [Demo ROS nodes](#demo-ros-nodes)
-  * [Classifier training and evaluation scripts](#classifier-training-and-evaluation-scripts)
+* [Installation](#Installation)
+* [Example Usage](#Example Usage)
+* [Detailed node and script documentation](#Detailed node and script documentation)
+  * [Primary ROS nodes](#Primary ROS nodes)
+  * [Supporting ROS nodes](#Supporting ROS nodes)
+  * [Demo ROS nodes](#Demo ROS nodes)
+  * [Classifier training and evaluation scripts](#Classifier training and evaluation scripts)
 
 ## Installation
 This package requires [scikit-learn](http://scikit-learn.org/stable/index.html).  Installation instructions can be found
@@ -51,19 +51,162 @@ This package is designed to work with [rail_grasp_calculation](https://github.co
 The following sections will function as short tutorials to get the system up and running for specific use cases.  
 
 ### Grasping individual objects
+The primary purpose of this package is to facilitate object grasping.  The package includes a demo file to
+immediately show off this functionality, and it's also designed to be incorporated into larger systems that require
+pick-and-place.  Both methods are explained below.
 
+**Grasping Demo**
+1. Launch the grasping demo:
+   1. Identify the topic of the point cloud you want to use as input.  This will be referred to as CLOUD for the
+   rest of these instructions.  If you're using the Fetch's head camera, you can skip this step as it will be set by
+   default.
+   1. Identify the name of the file name and path of the classifier model you're using.  This will be referred to as
+   CLASSIFIER for the rest of these instructions.  If you haven't trained your own classifier, you can skip this
+   step and use the default pre-trained classifier.
+   1. Run MoveIt! on the fetch with: `roslaunch fetch_moveit_config move_group.launch allow_active_sensing:=true`
+   1. Launch the grasping demo with: `roslaunch fetch_grasp_suggestion grasp_suggestion_testing.launch 
+   cloud_topic:=CLOUD classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head
+   camera and the pre-trained classifier.
+1. Call the segmentation service to update the scene objects.
+   * This demo starts [rail_segmentation](http://wiki.ros.org/rail_segmentation) by default.  You can call the
+   segmenter from the command line with `rosservice call rail_segmentation/segment {}`  
+   * If you'd like to use different object segmentation, see
+   [alternative segmentation](#connecting-alternative-object-segmentation) below.
+1. Call grasp suggestion by publishing to an object index to the `test_grasp_suggestion/grasp_object` topic.  For
+example, to grasp segmented object 0 from the command line, use: `rostopic pub /test_grasp_suggestion/grasp_object 
+std_msgs/Int32 "data: 0"`
+   * To use methods other than pairwise ranking (note, these generally don't perform as well and were only included for
+   evaluation), just change the topic you're publishing to:
+     * For grasps ranked by heuristics only: `rostopic pub /test_grasp_suggestion/grasp_object_heuristic std_msgs/Int32 
+     "data: 0"`
+     * For grasps from the AGILE pipeline: `rostopic pub /test_grasp_suggestion/grasp_object_agile std_msgs/Int32 
+     "data: 0"`
+     * For a random antipodal grasp: `rostopic pub /test_grasp_suggestion/grasp_object_random std_msgs/Int32 
+     "data: 0"`
+1. Executing the final grasp will require user input for safety.  Follow the instructions on the command line to execute
+the grasp.
+
+**Integrating Object Grasp Suggestion into a Larger System**
+1. Start grasp suggestion:
+   1. Identify the topic of the point cloud you want to use as input.  This will be referred to as CLOUD for the
+   rest of these instructions.  If you're using the Fetch's head camera, you can skip this step as it will be set by
+   default.
+   1. Identify the name of the file name and path of the classifier model you're using.  This will be referred to as
+   CLASSIFIER for the rest of these instructions.  If you haven't trained your own classifier, you can skip this
+   step and use the default pre-trained classifier.
+   1. Launch grasp suggestion with: `roslaunch fetch_grasp_suggestion grasp_suggestion.launch cloud_topic:=CLOUD
+   classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head camera and the
+   pre-trained classifier.
+1. To calculate grasp suggestions, have your node connect to the `suggester/suggest_grasps` ROS server
+   1. Pass in a segmented object point cloud as the service request.
+   2. The response will be a ranked grasp list, with the best grasp first.
 
 ### Clearing a cluttered scene without object segmentation
+A secondary use of this package is to calculate grasps over scenes without object segmentation.  For example, if you
+want to clear objects from a cluttered scene and you don't have object segmentation that can reliably identify objects
+in clutter, you can use this package to generate grasps over an entire scene, rather than for specific objects.  This
+package includes a demo file that performs cluttered scene clearing, and we also include instructions on integrating
+this functionality into a larger system.  Both methods are explained below.
 
+**Cluttered Scene Clearing Demo**
+1. Launch the cluttered scene demo:
+   1. Identify the topic of the point cloud you want to use as input.  This will be referred to as CLOUD for the
+   rest of these instructions.  If you're using the Fetch's head camera, you can skip this step as it will be set by
+   default.
+   1. Identify the name of the file name and path of the classifier model you're using.  This will be referred to as
+   CLASSIFIER for the rest of these instructions.  If you haven't trained your own classifier, you can skip this
+   step and use the default pre-trained classifier.
+   1. Run MoveIt! on the fetch with: `roslaunch fetch_moveit_config move_group.launch allow_active_sensing:=true`
+   1. Launch the cluttered scene demo with: `roslaunch fetch_grasp_suggestion cluttered_scene_demo.launch 
+   cloud_topic:=CLOUD classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head
+   camera and the pre-trained classifier.
+1. Start the demo by publishing an empty message to the `cluttered_scene_demo/run_demo` topic.  For example, to start
+the demo from the command line, use: `rostopic pub /cluttered_scene_demo/run_demo std_msgs/Empty "{}"`
+   * Executing each grasp will require user input for safety.  Follow the instructions on the command line to execute
+   whenever the demo pauses before grasp execution.
+   * The demo will loop until it can't find anymore grasps in the scene.  It can be stopped earlier by following
+   instructions to quit provided in the command line during each pause before grasp execution.
+
+**Integrating Scene Grasp Suggestion into a Larger System**
+1. Start grasp suggestion:
+   1. Identify the topic of the point cloud you want to use as input.  This will be referred to as CLOUD for the
+   rest of these instructions.  If you're using the Fetch's head camera, you can skip this step as it will be set by
+   default.
+   1. Identify the name of the file name and path of the classifier model you're using.  This will be referred to as
+   CLASSIFIER for the rest of these instructions.  If you haven't trained your own classifier, you can skip this
+   step and use the default pre-trained classifier.
+   1. Launch grasp suggestion with: `roslaunch fetch_grasp_suggestion grasp_suggestion.launch cloud_topic:=CLOUD
+   classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head camera and the
+   pre-trained classifier.
+1. To calculate grasp suggestions over a scene, have your node connect to the `suggester/suggest_grasps_scene` ROS
+server
+   1. Pass in a point cloud of the complete scene as the service request.
+   2. The response will be a ranked grasp list, with the best grasp first.
 
 ### Collecting new grasp preference training data
+To collect new grasp preferences, we recommend using the new version of
+[fetch_pbd](https://github.com/fetchrobotics/fetch_pbd).  This package also includes an older pipeline for gathering
+grasp suggestions using an interactive marker server and the command line.  WARNING: This functionality is deprecated
+in favor of fetch_pbd, but we include instructions here for completeness.
 
+1. Launch the grasp suggestion collector:
+   1. Run MoveIt! on the fetch with: `roslaunch fetch_moveit_config move_group.launch allow_active_sensing:=true`
+   1. Launch the grasp suggestion collector with: `roslaunch fetch_grasp_suggestion grasp_suggestion_collector.launch`
+1. Call the segmentation service to update the scene objects.
+   * This pipeline starts [rail_segmentation](http://wiki.ros.org/rail_segmentation) by default.  You can call the
+   segmenter from the command line with `rosservice call rail_segmentation/segment {}`
+1. Generate grasps for an object by sending an object index to the `suggester/get_grasp_suggestions` action server.
+1. Cycle through the grasp suggestions, visualized in RVIZ with a marker representing the Fetch's gripper, by calling
+the `selector/cycle_grasps` ROS service.
+1. Select the best grasp and execute it by sending an empty goal to the `selector/execute_selected_grasp` action server.
+   * This will append new pairwise feature vectors as training data to the `grasp_data.csv` file, which will be
+   located in the `.ros` directory under your home directory.
+   * The final .csv file can optionally be added to the `data/grasp_preferences` directory of `fetch_grasp_suggestion`
+   to use relative paths for other launch files.
 
 ### Training a new classifier
+If you have training data in a .csv file, training a new classifier is as easy as running a single script.  The trained
+classifier can then be used by changing the `classifier_file` parameter in many of the launch files.  New trained
+classifiers can be added to the `data/classifier/` directory of `fetch_grasp_suggestion`, or they can be loaded from
+anywhere by passing an absolute path to the `classifier_file` parameter.
 
+1. Decide what types of classifier you'd like to train.  Supported classifier types include: `["decision_tree",
+"random_forest", "ada_boost", "knn", "svm", "logistic_regression", "nn1", "nn2"]`.  This will be referred to as
+CLASSIFIERS for the rest of these instructions.
+1. Identify the file name and path of your training data, which will be referred to as DATA for the rest of these
+instructions.
+1. Call the classifier training node with: `rosrun fetch_grasp_suggestion train_classifier.py 
+_classifier_types:=CLASSIFIERS _file_name:=DATA`
+
+Examples:
+* Train a random forest and a k nearest neighbors model over training data `new_grasp_data.csv` found in
+the `(fetch_grasp_suggestion)/data/grasp_preferences` directory:
+```bash
+rosrun fetch_grasp_suggestion train_classifier.py _classifier_types:=[random_forest, knn] _file_name:=new_grasp_data.csv
+```
+* Train a neural network with 2 hidden layers over training data `lots_of_data.csv` found in your home directory:
+```bash
+rosrun fetch_grasp_suggestion train_classifier.py _classifier_types:=[nn2] _file_name:=/home/(username)/lots_of_data.csv
+```
 
 ### Evaluating alternative classifiers
+This package contains many tools for evaluating different classifier types and different model parameters.  For model
+parameter cross validation, call `rosrun fetch_grasp_suggestion cross_validate_params.py` with parameters as specified
+in [its detailed documentation section](#cross_validate_params.py).  For comparing the effectiveness of different types
+of classifiers, call `rosrun fetch_grasp_suggestion evaluate_classifier.py` with parameters as specified in
+[its detailed documentation section](#evaluate_classifier.py).
 
+### Connecting alternative object segmentation
+By default, this package is set up to use [rail_segmentation](http://wiki.ros.org/rail_segmentation) for object
+segmentation.  If you'd like to use your own segmentation methodology, this can easily be connected to
+`fetch_grasp_suggestion` with the following steps.
+
+1. Make sure your segmentation implementation publishes segmented objects to a topic with message type
+[rail_segmentation/SegmentedObjectList](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/msg/SegmentedObjectList.msg).
+1. Change the `fetch_grasp_suggestion` launch file you're using to start up your segmentation instead of
+`rail_segmentation`
+1. Set the `segmentation_topic` parameter of any `fetch_grasp_suggestion` nodes that you're running to your new
+segmentation topic.
 
 ## Detailed node and script documentation
 The package contains a set of ROS nodes organized as shown in the diagram below.  Each section is documented separately
