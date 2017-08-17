@@ -73,6 +73,7 @@ pick-and-place.  Both methods are explained below.
    1. Launch the grasping demo with: `roslaunch fetch_grasp_suggestion grasp_suggestion_testing.launch 
    cloud_topic:=CLOUD classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head
    camera and the pre-trained classifier.
+1. Run the rviz interface with: `roslaunch fetch_grasp_suggestion grasp_suggestion_testing_frontend.launch`
 1. Call the segmentation service to update the scene objects.
    * This demo starts [rail_segmentation](http://wiki.ros.org/rail_segmentation) by default.  You can call the
    segmenter from the command line with `rosservice call rail_segmentation/segment {}`  
@@ -126,6 +127,7 @@ this functionality into a larger system.  Both methods are explained below.
    1. Launch the cluttered scene demo with: `roslaunch fetch_grasp_suggestion cluttered_scene_demo.launch 
    cloud_topic:=CLOUD classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head
    camera and the pre-trained classifier.
+1. Run the rviz interface with: `roslaunch fetch_grasp_suggestion cluttered_scene_demo_frontend.launch`
 1. Start the demo by publishing an empty message to the `cluttered_scene_demo/run_demo` topic.  For example, to start
 the demo from the command line, use: `rostopic pub /cluttered_scene_demo/run_demo std_msgs/Empty "{}"`
    * Executing each grasp will require user input for safety.  Follow the instructions on the command line to execute
@@ -158,6 +160,7 @@ in favor of fetch_pbd, but we include instructions here for completeness.
 1. Launch the grasp suggestion collector:
    1. Run MoveIt! on the fetch with: `roslaunch fetch_moveit_config move_group.launch allow_active_sensing:=true`
    1. Launch the grasp suggestion collector with: `roslaunch fetch_grasp_suggestion grasp_suggestion_collector.launch`
+1. Run the rviz interface with: `roslaunch fetch_grasp_suggestion grasp_suggestion_collector_frontend.launch`
 1. Call the segmentation service to update the scene objects.
    * This pipeline starts [rail_segmentation](http://wiki.ros.org/rail_segmentation) by default.  You can call the
    segmenter from the command line with `rosservice call rail_segmentation/segment {}`
