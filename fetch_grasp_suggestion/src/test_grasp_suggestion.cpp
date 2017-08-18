@@ -68,7 +68,6 @@ void Tester::testCallback(const std_msgs::Int32 &msg)
   fetch_grasp_suggestion::ExecuteGraspGoal grasp_goal;
   grasp_goal.index = msg.data;
   grasp_goal.grasp_pose.header.frame_id = poseList.header.frame_id;
-  //for (size_t i = 0; i < poseList.poses.size(); i ++)
   size_t i = 0;
   while(true)
   {

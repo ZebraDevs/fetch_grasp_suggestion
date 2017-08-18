@@ -1,5 +1,4 @@
 #include <fetch_grasp_suggestion/executor.h>
-#include <eigen_conversions/eigen_msg.h>
 
 using std::string;
 using std::stringstream;
@@ -43,9 +42,6 @@ Executor::Executor() :
 
   arm_group_ = new move_group_interface::MoveGroup("arm");
   arm_group_->startStateMonitor();
-
-  arm_with_torso_group_ = new move_group_interface::MoveGroup("arm_with_torso");
-  arm_with_torso_group_->startStateMonitor();
 
   planning_scene_interface_ = new move_group_interface::PlanningSceneInterface();
 
@@ -326,13 +322,11 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   //lift object
   //linear move to grasp pose
   moveit_msgs::GetCartesianPath lift_path;
-  //transformed_grasp_pose.pose.position.z += 0.12;
   transformed_grasp_pose.pose.position.z += 0.2;
   lift_path.request.waypoints.push_back(transformed_grasp_pose.pose);
   lift_path.request.max_step = 0.01;
   lift_path.request.jump_threshold = 0.0;
   lift_path.request.avoid_collisions = false;
-//  lift_path.request.group_name = "arm_with_torso";
   lift_path.request.group_name = "arm";
   moveit::core::robotStateToRobotStateMsg(*(arm_group_->getCurrentState()), lift_path.request.start_state);
   if(!compute_cartesian_path_client_.call(lift_path))
@@ -365,21 +359,8 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   }
   move_group_interface::MoveGroup::Plan liftPlan;
   liftPlan.trajectory_ = lift_path.response.solution;
-//  moveit::core::robotStateToRobotStateMsg(*(arm_with_torso_group_->getCurrentState()), liftPlan.start_state_);
-//  result.error_code = arm_with_torso_group_->execute(liftPlan);
   moveit::core::robotStateToRobotStateMsg(*(arm_group_->getCurrentState()), liftPlan.start_state_);
   result.error_code = arm_group_->execute(liftPlan);
-
-  //TODO: The torso controller misreports failure, so for these short moves we'll consider everything a success so
-  //TODO: execution can continue...
-//  if (result.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
-//  {
-//    ROS_INFO("Failed to pick up object");
-//    result.success = false;
-//    result.failure_point = fetch_grasp_suggestion::ExecuteGraspResult::PICK_UP_EXECUTION;
-//    execute_grasp_server_.setSucceeded(result);
-//    return;
-//  }
 
   result.success = true;
   execute_grasp_server_.setSucceeded(result);

@@ -48,7 +48,6 @@ void ClutteredSceneDemo::runCallback(const std_msgs::Empty &msg)
       return;
     }
 
-//    ros::Duration(5.0).sleep();
     // give head shake time to settle
     ros::Rate sleep_rate(30);
     for (int i = 0; i < 150; i ++)
@@ -169,6 +168,12 @@ void ClutteredSceneDemo::runCallback(const std_msgs::Empty &msg)
       }
       poseList = pairwise_rank.response.grasp_list;
       ROS_INFO("Ranked %lu grasps.", poseList.poses.size());
+
+      if (poseList.poses.empty())
+      {
+        ROS_INFO("Ranking returned no grasps, stoppine execution.");
+        return;
+      }
     }
 
     // execute best grasp
@@ -257,12 +262,11 @@ void ClutteredSceneDemo::runCallback(const std_msgs::Empty &msg)
     gripper_client_.waitForResult(ros::Duration(5.0));
 
     // wait for object to fall out of gripper
-    for (int i = 0; i < 90; i ++)
+    for (int j = 0; j < 90; j ++)
     {
       sleep_rate.sleep();
       ros::spinOnce();
     }
-    //ros::Duration(3.0).sleep();
   }
 }
 

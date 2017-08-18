@@ -118,21 +118,11 @@ bool Suggester::pairwiseRankSceneCallback(rail_manipulation_msgs::PairwiseRank::
     }
   }
 
-  struct timeval start;
-  gettimeofday(&start, NULL);
-  unsigned long long start_time = start.tv_usec + (unsigned long long)start.tv_sec * 1000000;
-
   if (!classify_all_client_.call(classify))
   {
     ROS_INFO("Failed to call classify all service!");
     return false;
   }
-
-  struct timeval end;
-  gettimeofday(&end, NULL);
-  unsigned long long end_time = end.tv_usec + (unsigned long long)end.tv_sec * 1000000;
-  std::cout << "Classifier runtime:" << std::endl;
-  std::cout << end_time - start_time << std::endl;
 
   res.grasp_list = classify.response.grasp_list;
 
@@ -693,7 +683,6 @@ void Suggester::SampleGraspCandidates(sensor_msgs::PointCloud2 object, string ob
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
   if (object_cloud->header.frame_id != environment_source_frame)
   {
-    //pcl_ros::transformPointCloud(cloudSourceFrame, *object_cloud, *transformed_cloud, tfListener);
     pcl_ros::transformPointCloud(environment_source_frame, ros::Time(0), *object_cloud, object_source_frame,
                                  *transformed_cloud, tf_listener_);
     transformed_cloud->header.frame_id = environment_source_frame;

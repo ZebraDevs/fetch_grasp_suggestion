@@ -55,9 +55,9 @@ def cross_validate():
     Important for svm and nn...
     '''
     '''
-    data[:,0] = data[:,0]/50 - 1    # ceilab L, normalizing to [-1,1]
-    data[:,1] /= 256                # ceilab a, normalizing to [-1,1] (approximate)
-    data[:,2] /= 256                # ceilab b, normalizing to [-1,1] (approximate)
+    data[:,0] = data[:,0]/50 - 1    # cielab L, normalizing to [-1,1]
+    data[:,1] /= 256                # cielab a, normalizing to [-1,1] (approximate)
+    data[:,2] /= 256                # cielab b, normalizing to [-1,1] (approximate)
     '''
 
     data, label = shuffle(data, label)

@@ -1,2 +1,2 @@
 # rail_grasp_calculation_msgs
-Messages used for grasp calculation
+ROS messages for RAIL grasp calculation.  See the top-level metapackage documentation for details.

@@ -8,6 +8,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
 #include <control_msgs/GripperCommandAction.h>
+#include <eigen_conversions/eigen_msg.h>
 #include <fetch_grasp_suggestion/AddObject.h>
 #include <fetch_grasp_suggestion/bounding_box_calculator.h>
 #include <fetch_grasp_suggestion/ExecuteGraspAction.h>
@@ -139,7 +140,6 @@ private:
 
   //MoveIt interfaces
   move_group_interface::MoveGroup *arm_group_;
-  move_group_interface::MoveGroup *arm_with_torso_group_;
   move_group_interface::PlanningSceneInterface *planning_scene_interface_;
 
   tf2_ros::TransformBroadcaster tf_broadcaster_;

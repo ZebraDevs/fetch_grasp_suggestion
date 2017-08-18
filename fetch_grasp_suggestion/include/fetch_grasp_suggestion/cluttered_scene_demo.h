@@ -46,8 +46,20 @@ public:
 
 private:
 
+  /**
+   * @brief Callback to begin demo execution.
+   *
+   * Once called, the demo will run to completion, or until the user manually stops execution by following the
+   * prompts presented in the command line.
+   *
+   * @param msg Empty message
+   */
   void runCallback(const std_msgs::Empty &msg);
 
+  /**
+   * @brief Receive the point cloud covering the area to be cleared in the demo.
+   * @param cloud Current scene point cloud
+   */
   void cloudCallback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
 
   ros::NodeHandle n_, pnh_;

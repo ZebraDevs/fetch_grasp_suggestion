@@ -443,7 +443,8 @@ in the current directory of the terminal in which the script was executed.
   * `~/classifier_types` (string[], ["decision_tree"])  
   The types of classifiers to train models for.  Supported classifiers include: `["decision_tree", "random_forest",
   "ada_boost", "knn", "svm", "logistic_regression", "nn1", "nn2"]`, where `"nn1"` is a neural network with a single
-  hidden layer, and `"nn2"` is a neural network with two hidden layers.
+  hidden layer, and `"nn2"` is a neural network with two hidden layers.  You can also pass in "all" to train one of
+  each supported classifier.
   * `~/file_name` (string, "grasp_data.csv")  
   The filename containing the training data.  File paths can be relative or absolute.  If the path is relative, the
   script assumes the file is located in the directory (location of fetch_grasp_suggestion)/data/grasp_preferences/.
@@ -455,7 +456,8 @@ validation, detailed results on a train/test split, learning curve plots, ROC cu
   * `~/classifier_types` (string[], ["decision_tree"])  
   The types of classifiers to test.  Supported classifiers include: `["decision_tree", "random_forest",
   "ada_boost", "knn", "svm", "logistic_regression", "nn1", "nn2"]`, where `"nn1"` is a neural network with a single
-  hidden layer, and `"nn2"` is a neural network with two hidden layers.
+  hidden layer, and `"nn2"` is a neural network with two hidden layers.  You can also pass in "all" to evaluate
+  every supported classifier.
   * `~/file_name` (string, "grasp_data.csv")  
   The filename containing all of the data, which will be used to create training and testing sets.  File paths can be
   relative or absolute.  If the path is relative, the script assumes the file is located in the directory (location of
@@ -475,7 +477,8 @@ Perform cross validation to examine the effects of different model parameters fo
   The types of classifiers to use.  A separate cross-validation procedure will be carried out for each classifier type,
   with a set of parameters appropriate to that classifier type.  Supported classifiers include: `["decision_tree",
   "random_forest", "ada_boost", "knn", "svm", "logistic_regression", "nn1", "nn2"]`, where `"nn1"` is a neural network
-  with a single hidden layer, and `"nn2"` is a neural network with two hidden layers.
+  with a single hidden layer, and `"nn2"` is a neural network with two hidden layers.  You can also pass in "all" to
+  cross validate parameters for every supported classifier.
   * `~/file_name` (string, "grasp_data.csv")  
   The filename containing all of the data, which will be used for training and testing during cross-validation.  File
   paths can be relative or absolute.  If the path is relative, the script assumes the file is located in the directory

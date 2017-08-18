@@ -98,7 +98,6 @@ class ClassifierNode:
             result.poses.append(req.grasp_list.grasps[i].pose.pose)
 
         # optional interpretation report (only for decision tree and random forest models!)
-        # TODO: get a classification report on just the top grasp and all of its pairs
         if self.interpret_trees and len(result.poses) > 0:
             prediction, bias, contributions = ti.predict(self.model, data)
             contributions_false = [[] for i in range(data.shape[1])]
@@ -140,12 +139,6 @@ class ClassifierNode:
             bar_width = 0.35
             opacity = 0.4
             error_config = {'ecolor': '0.3'}
-
-            # print "means_true", means_true
-            # print "stds_true", stds_true
-            # print "means_true length:", len(means_true)
-            # print "stds_true length:", len(stds_true)
-            # print "index", index
 
             rects1 = pyplot.bar(index, means_true, bar_width,
                                 alpha=opacity,

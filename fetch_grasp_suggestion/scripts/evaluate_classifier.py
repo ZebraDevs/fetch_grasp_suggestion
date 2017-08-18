@@ -58,7 +58,6 @@ def evaluate_classifier():
     print '\nImported', data.shape[0], 'training instances'
 
     data, label = shuffle(data, label)
-    data_no_obj = data[:, 6:11]
 
     # TODO(enhancement): normalization is currently hardcoded; assumes a specific feature vector organization
     '''
@@ -66,14 +65,12 @@ def evaluate_classifier():
     Important for svm and nn...
     '''
     data_normalized = data
-    data_normalized[:, 0] = data_normalized[:, 0]/50 - 1    # ceilab L, normalizing to [-1,1]
-    data_normalized[:, 1] /= 256                            # ceilab a, normalizing to [-1,1] (approximate)
-    data_normalized[:, 2] /= 256                            # ceilab b, normalizing to [-1,1] (approximate)
+    data_normalized[:, 0] = data_normalized[:, 0]/50 - 1    # cielab L, normalizing to [-1,1]
+    data_normalized[:, 1] /= 256                            # cielab a, normalizing to [-1,1] (approximate)
+    data_normalized[:, 2] /= 256                            # cielab b, normalizing to [-1,1] (approximate)
 
     split = rospy.get_param('~split', 0.4)
     data_train, data_test, label_train, label_test = train_test_split(data, label, test_size=split)
-    data_train_no_obj = data_train[:, 6:11]
-    data_test_no_obj = data_test[:, 6:11]
 
     # TODO(enhancement): normalization is currently hardcoded; assumes a specific feature vector organization
     '''
@@ -81,13 +78,13 @@ def evaluate_classifier():
     Important for svm and nn...
     '''
     data_train_normalized = data_train
-    data_train_normalized[:, 0] = data_train_normalized[:, 0]/50 - 1    # ceilab L, normalizing to [-1,1]
-    data_train_normalized[:, 1] /= 256                                  # ceilab a, normalizing to [-1,1] (approximate)
-    data_train_normalized[:, 2] /= 256                                  # ceilab b, normalizing to [-1,1] (approximate)
+    data_train_normalized[:, 0] = data_train_normalized[:, 0]/50 - 1    # cielab L, normalizing to [-1,1]
+    data_train_normalized[:, 1] /= 256                                  # cielab a, normalizing to [-1,1] (approximate)
+    data_train_normalized[:, 2] /= 256                                  # cielab b, normalizing to [-1,1] (approximate)
     data_test_normalized = data_test
-    data_test_normalized[:, 0] = data_test_normalized[:, 0]/50 - 1      # ceilab L, normalizing to [-1,1]
-    data_test_normalized[:, 1] /= 256                                   # ceilab a, normalizing to [-1,1] (approximate)
-    data_test_normalized[:, 2] /= 256                                   # ceilab b, normalizing to [-1,1] (approximate)
+    data_test_normalized[:, 0] = data_test_normalized[:, 0]/50 - 1      # cielab L, normalizing to [-1,1]
+    data_test_normalized[:, 1] /= 256                                   # cielab a, normalizing to [-1,1] (approximate)
+    data_test_normalized[:, 2] /= 256                                   # cielab b, normalizing to [-1,1] (approximate)
 
     plot = rospy.get_param('~generate_plots', False)
 
@@ -100,14 +97,6 @@ def evaluate_classifier():
     precision = dict()
     recall = dict()
     pr_label = dict()
-    probs_no_obj = dict()
-    fpr_no_obj = dict()
-    tpr_no_obj = dict()
-    thresholds_no_obj = dict()
-    roc_label_no_obj = dict()
-    precision_no_obj = dict()
-    recall_no_obj = dict()
-    pr_label_no_obj = dict()
     index = 0
 
     for classifier_type in types:
@@ -115,14 +104,12 @@ def evaluate_classifier():
         print 'Evaluating classifier: ' + classifier_type
 
         classifier = prepare_classifier(classifier_type)
-        classifier_no_obj = prepare_classifier(classifier_type)
 
         print('Performing 10-fold cross validation...')
         if classifier_type in normalize_classifiers:
             scores = cross_val_score(classifier, data_normalized, label, cv=10)
         else:
             scores = cross_val_score(classifier, data, label, cv=10)
-            scores_no_obj = cross_val_score(classifier_no_obj, data_no_obj, label, cv=10)
         print('Accuracy: %0.2f +/- %0.2f\n' % (scores.mean(), scores.std()))
 
         print('Detailed results on a %0.0f/%0.0f train/test split:' % ((1 - split)*100, split*100))
@@ -132,14 +119,8 @@ def evaluate_classifier():
         else:
             classifier.fit(data_train, label_train)
             predicted = classifier.predict(data_test)
-            classifier_no_obj.fit(data_train_no_obj, label_train)
-            predicted_no_obj = classifier_no_obj.predict(data_test_no_obj)
-        print('\nResults with object information:')
         print(metrics.classification_report(label_test, predicted))
         print(metrics.confusion_matrix(label_test, predicted))
-        print('\nResults without object information:')
-        print(metrics.classification_report(label_test, predicted_no_obj))
-        print(metrics.confusion_matrix(label_test, predicted_no_obj))
 
 
         if plot:
@@ -147,7 +128,6 @@ def evaluate_classifier():
             cross_val_size = 10
             step_size = data.shape[0]//20
             train_sizes = range(step_size, data.shape[0] - data.shape[0]//cross_val_size, step_size)
-            train_sizes_no_obj = range(step_size, data_no_obj.shape[0] - data_no_obj.shape[0]//cross_val_size, step_size)
             if classifier_type in normalize_classifiers:
                 train_sizes, train_scores, valid_scores = learning_curve(prepare_classifier(classifier_type),
                                                                          data_normalized, label,
@@ -156,23 +136,14 @@ def evaluate_classifier():
                 train_sizes, train_scores, valid_scores = learning_curve(prepare_classifier(classifier_type),
                                                                          data, label,
                                                                          train_sizes=train_sizes, cv=cross_val_size)
-                train_sizes_no_obj, train_scores_no_obj, valid_scores_no_obj = learning_curve(prepare_classifier(classifier_type),
-                                                                         data_no_obj, label,
-                                                                         train_sizes=train_sizes_no_obj, cv=cross_val_size)
             y1_mean, y1_lower, y1_upper = calculate_means_with_bounds(train_scores)
             y2_mean, y2_lower, y2_upper = calculate_means_with_bounds(valid_scores)
-            y1_mean_no_obj, y1_lower_no_obj, y1_upper_no_obj = calculate_means_with_bounds(train_scores_no_obj)
-            y2_mean_no_obj, y2_lower_no_obj, y2_upper_no_obj = calculate_means_with_bounds(valid_scores_no_obj)
             pyplot.figure()
             pyplot.ion()
             pyplot.fill_between(train_sizes, y1_lower, y1_upper, color='r', alpha=0.2)
             pyplot.plot(train_sizes, y1_mean, color='r', label='Training score')
             pyplot.fill_between(train_sizes, y2_lower, y2_upper, color='b', alpha=0.2)
             pyplot.plot(train_sizes, y2_mean, color='b', label='Cross-validation score')
-            pyplot.fill_between(train_sizes_no_obj, y1_lower_no_obj, y1_upper_no_obj, color='m', alpha=0.2)
-            pyplot.plot(train_sizes_no_obj, y1_mean_no_obj, color='m', label='Training score (no object features)')
-            pyplot.fill_between(train_sizes_no_obj, y2_lower_no_obj, y2_upper_no_obj, color='c', alpha=0.2)
-            pyplot.plot(train_sizes_no_obj, y2_mean_no_obj, color='c', label='Cross-validation score (no object features)')
             pyplot.axis([0, data.shape[0], 0.4, 1.05])
             pyplot.title(get_classifier_string(classifier_type))
             pyplot.xlabel('Training examples')
@@ -185,21 +156,14 @@ def evaluate_classifier():
                 probs[index] = classifier.predict_proba(data_test_normalized)[:, 1]
             else:
                 probs[index] = classifier.predict_proba(data_test)[:, 1]
-                probs_no_obj[index] = classifier_no_obj.predict_proba(data_test_no_obj)[:, 1]
             fpr[index], tpr[index], thresholds[index] = roc_curve(label_test, probs[index])
-            fpr_no_obj[index], tpr_no_obj[index], thresholds_no_obj[index] = roc_curve(label_test, probs_no_obj[index])
             roc_label[index] = get_classifier_string(classifier_type) \
                 + ('(area = %0.2f)' % roc_auc_score(label_test, probs[index]))
-            roc_label_no_obj[index] = get_classifier_string(classifier_type) + ' (no object features) ' \
-                + ('(area = %0.2f)' % roc_auc_score(label_test, probs_no_obj[index]))
 
             # Precision-Recall curve
             precision[index], recall[index], _ = precision_recall_curve(label_test, probs[index])
-            precision_no_obj[index], recall_no_obj[index], _ = precision_recall_curve(label_test, probs_no_obj[index])
             pr_label[index] = get_classifier_string(classifier_type) \
                 + ('(area = %0.2f)' % average_precision_score(label_test, probs[index]))
-            pr_label_no_obj[index] = get_classifier_string(classifier_type) + ' (no object features) ' \
-                + ('(area = %0.2f)' % average_precision_score(label_test, probs_no_obj[index]))
 
             index += 1
 
@@ -209,7 +173,6 @@ def evaluate_classifier():
         pyplot.ion()
         for i in range(len(types)):
             pyplot.plot(fpr[i], tpr[i], label=roc_label[i])
-            pyplot.plot(fpr_no_obj[i], tpr_no_obj[i], label=roc_label_no_obj[i])
         pyplot.xlabel('False positive rate')
         pyplot.ylabel('True positive rate')
         pyplot.title('ROC Curve')
@@ -221,7 +184,6 @@ def evaluate_classifier():
         pyplot.ion()
         for i in range(len(types)):
             pyplot.plot(recall[i], precision[i], label=pr_label[i])
-            pyplot.plot(recall_no_obj[i], precision_no_obj[i], label=pr_label_no_obj[i])
         pyplot.xlabel('Recall')
         pyplot.ylabel('Precision')
         pyplot.title('Precision-Recall Curve')
