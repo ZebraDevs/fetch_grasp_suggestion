@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find fetch_grasp_suggestion)/rviz/grasp_suggestion_collector.rviz" />
-</launch>
