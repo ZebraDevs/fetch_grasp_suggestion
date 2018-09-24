@@ -1,4 +1,0 @@
-bool forward
----
-geometry_msgs/PoseStamped grasp
-int16 index

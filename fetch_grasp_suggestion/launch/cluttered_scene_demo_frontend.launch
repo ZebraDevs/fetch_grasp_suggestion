@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find fetch_grasp_suggestion)/rviz/cluttered_scene_demo.rviz" />
-</launch>
