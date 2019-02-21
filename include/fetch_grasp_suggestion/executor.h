@@ -15,7 +15,7 @@
 #include <fetch_grasp_suggestion/PresetMoveAction.h>
 #include <moveit_msgs/GetCartesianPath.h>
 #include <moveit_msgs/GetPlanningScene.h>
-#include <moveit/move_group_interface/move_group.h>
+#include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
 #include <moveit/robot_state/conversions.h>
@@ -139,14 +139,17 @@ private:
   boost::mutex object_mutex_;
 
   //MoveIt interfaces
-  move_group_interface::MoveGroup *arm_group_;
-  move_group_interface::PlanningSceneInterface *planning_scene_interface_;
+
+  moveit::planning_interface::MoveGroupInterface *arm_group_;
+  moveit::planning_interface::PlanningSceneInterface *planning_scene_interface_;
+//  move_group_interface::MoveGroupInterface *arm_group_;
+//  move_group_interface::PlanningSceneInterface *planning_scene_interface_;
 
   tf2_ros::TransformBroadcaster tf_broadcaster_;
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
 
-  tf::TransformListener tf1_listener_;
+//  tf::TransformListener tf1_listener_;
 
   sensor_msgs::JointState ready_pose_;
   sensor_msgs::JointState drop_pose_;
