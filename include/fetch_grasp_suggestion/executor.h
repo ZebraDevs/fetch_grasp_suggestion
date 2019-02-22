@@ -139,17 +139,12 @@ private:
   boost::mutex object_mutex_;
 
   //MoveIt interfaces
-
   moveit::planning_interface::MoveGroupInterface *arm_group_;
   moveit::planning_interface::PlanningSceneInterface *planning_scene_interface_;
-//  move_group_interface::MoveGroupInterface *arm_group_;
-//  move_group_interface::PlanningSceneInterface *planning_scene_interface_;
 
   tf2_ros::TransformBroadcaster tf_broadcaster_;
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
-
-//  tf::TransformListener tf1_listener_;
 
   sensor_msgs::JointState ready_pose_;
   sensor_msgs::JointState drop_pose_;
