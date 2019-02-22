@@ -123,7 +123,6 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   moveit_msgs::Grasp grasp;
 
   string group_reference_frame = arm_group_->getPoseReferenceFrame();
-  group_reference_frame = group_reference_frame.substr(1);
 
   //transform pose to reference group coordinate frame (fixes an annoying bug that spams warnings to the terminal...)
   geometry_msgs::PoseStamped grasp_pose;
