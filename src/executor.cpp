@@ -40,10 +40,10 @@ Executor::Executor() :
   drop_pose_.position.push_back(-1.1917);
   drop_pose_.position.push_back(0.0);
 
-  arm_group_ = new move_group_interface::MoveGroup("arm");
+  arm_group_ = new moveit::planning_interface::MoveGroupInterface("arm");
   arm_group_->startStateMonitor();
 
-  planning_scene_interface_ = new move_group_interface::PlanningSceneInterface();
+  planning_scene_interface_ = new moveit::planning_interface::PlanningSceneInterface();
 
   planning_scene_publisher_ = n_.advertise<moveit_msgs::PlanningScene>("/planning_scene", 1);
   test1_ = pnh_.advertise<geometry_msgs::PoseStamped>("pose1", 1);
@@ -71,7 +71,7 @@ void Executor::prepareRobot(const fetch_grasp_suggestion::PresetMoveGoalConstPtr
   arm_group_->setPlanningTime(7.0);
   arm_group_->setStartStateToCurrentState();
   arm_group_->setJointValueTarget(ready_pose_);
-  result.error_code = arm_group_->move();
+  result.error_code = arm_group_->move().val;
   if (result.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
   {
     ROS_INFO("Failed to move to ready pose.");
@@ -96,7 +96,7 @@ void Executor::dropPosition(const fetch_grasp_suggestion::PresetMoveGoalConstPtr
   arm_group_->setPlanningTime(7.0);
   arm_group_->setStartStateToCurrentState();
   arm_group_->setJointValueTarget(drop_pose_);
-  result.error_code = arm_group_->move();
+  result.error_code = arm_group_->move().val;
   if (result.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
   {
     ROS_INFO("Failed to move to drop pose.");
@@ -123,7 +123,6 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   moveit_msgs::Grasp grasp;
 
   string group_reference_frame = arm_group_->getPoseReferenceFrame();
-  group_reference_frame = group_reference_frame.substr(1);
 
   //transform pose to reference group coordinate frame (fixes an annoying bug that spams warnings to the terminal...)
   geometry_msgs::PoseStamped grasp_pose;
@@ -131,7 +130,12 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   {
     grasp_pose.header.stamp = ros::Time(0);
     grasp_pose.header.frame_id = group_reference_frame;
-    tf1_listener_.transformPose(group_reference_frame, goal->grasp_pose, grasp_pose);
+
+    geometry_msgs::TransformStamped group_to_grasp_transform = tf_buffer_.lookupTransform(group_reference_frame,
+        goal->grasp_pose.header.frame_id, ros::Time(0), ros::Duration(1.0));
+    tf2::doTransform(goal->grasp_pose, grasp_pose, group_to_grasp_transform);
+
+//    tf1_listener_.transformPose(group_reference_frame, goal->grasp_pose, grasp_pose);
   }
   else
   {
@@ -177,7 +181,7 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   arm_group_->setPlanningTime(1.5);
   arm_group_->setStartStateToCurrentState();
   arm_group_->setPoseTarget(transformed_approach_pose, "wrist_roll_link");
-  result.error_code = arm_group_->move();
+  result.error_code = arm_group_->move().val;
   if (result.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
   {
     ROS_INFO("Failed to move to approach pose.");
@@ -230,7 +234,7 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   //linear move to grasp pose
   arm_group_->setStartStateToCurrentState();
   arm_group_->setPoseTarget(transformed_grasp_pose, "wrist_roll_link");
-  result.error_code = arm_group_->move();
+  result.error_code = arm_group_->move().val;
   if (result.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
   {
     ROS_INFO("Failed to move to grasp pose.");
@@ -340,14 +344,14 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
   }
   else if (lift_path.response.fraction < 0.5)
   {
-    move_group_interface::MoveGroup::Plan liftPlan;
+    moveit::planning_interface::MoveGroupInterface::Plan liftPlan;
     liftPlan.trajectory_ = lift_path.response.solution;
     moveit::core::robotStateToRobotStateMsg(*(arm_group_->getCurrentState()), liftPlan.start_state_);
-    result.error_code = arm_group_->execute(liftPlan);
+    result.error_code = arm_group_->execute(liftPlan).val;
 
     arm_group_->setStartStateToCurrentState();
     arm_group_->setPoseTarget(transformed_grasp_pose, "wrist_roll_link");
-    result.error_code = arm_group_->move();
+    result.error_code = arm_group_->move().val;
     if (result.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
     {
       ROS_INFO("Failed to move to lift pose.");
@@ -357,10 +361,10 @@ void Executor::executeGrasp(const fetch_grasp_suggestion::ExecuteGraspGoalConstP
       return;
     }
   }
-  move_group_interface::MoveGroup::Plan liftPlan;
+  moveit::planning_interface::MoveGroupInterface::Plan liftPlan;
   liftPlan.trajectory_ = lift_path.response.solution;
   moveit::core::robotStateToRobotStateMsg(*(arm_group_->getCurrentState()), liftPlan.start_state_);
-  result.error_code = arm_group_->execute(liftPlan);
+  result.error_code = arm_group_->execute(liftPlan).val;
 
   result.success = true;
   execute_grasp_server_.setSucceeded(result);
