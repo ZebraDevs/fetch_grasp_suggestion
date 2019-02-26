@@ -40,6 +40,7 @@ add_action_files(FILES
         ExecuteGrasp.action
         ExecuteSelectedGrasp.action
         PresetMove.action
+        PresetJointsMove.action
         SuggestGrasps.action
 )
 
@@ -104,8 +105,8 @@ target_link_libraries(test_grasp_suggestion ${catkin_LIBRARIES})
 target_link_libraries(cluttered_scene_demo ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library
-add_dependencies(suggester ${PROJECT_NAME}_generate_messages_cpp rail_manipulation_msgs_gencpp rail_grasp_calculation_msgs_gencpp)
-add_dependencies(selector ${PROJECT_NAME}_generate_messages_cpp rail_manipulation_msgs_gencpp rail_grasp_calculation_msgs_gencpp)
+add_dependencies(suggester ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(selector ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(executor ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(test_grasp_suggestion ${PROJECT_NAME}_generate_messages_cpp)
 add_dependencies(cluttered_scene_demo ${PROJECT_NAME}_generate_messages_cpp)

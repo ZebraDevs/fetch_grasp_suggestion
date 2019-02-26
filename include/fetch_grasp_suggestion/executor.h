@@ -7,14 +7,19 @@
 // ROS
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
+#include <actionlib_msgs/GoalStatusArray.h>
+#include <actionlib_msgs/GoalStatus.h>
 #include <control_msgs/GripperCommandAction.h>
 #include <eigen_conversions/eigen_msg.h>
 #include <fetch_grasp_suggestion/AddObject.h>
 #include <fetch_grasp_suggestion/bounding_box_calculator.h>
 #include <fetch_grasp_suggestion/ExecuteGraspAction.h>
 #include <fetch_grasp_suggestion/PresetMoveAction.h>
+#include <fetch_grasp_suggestion/PresetJointsMoveAction.h>
 #include <moveit_msgs/GetCartesianPath.h>
 #include <moveit_msgs/GetPlanningScene.h>
+#include <moveit_msgs/RobotTrajectory.h>
+#include <moveit_msgs/MoveItErrorCodes.h>
 #include <moveit/move_group_interface/move_group.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
@@ -66,6 +71,12 @@ private:
    * @param goal empty goal
    */
   void dropPosition(const fetch_grasp_suggestion::PresetMoveGoalConstPtr &goal);
+
+  /**
+   * @brief Move the arm to a tuck position in preparation for navigation.
+   * @param goal empty goal
+   */
+  void presetPosition(const fetch_grasp_suggestion::PresetJointsMoveGoalConstPtr &goal);
 
   /**
    * @brief Add a collision object to the MoveIt! planning scene.
@@ -134,6 +145,7 @@ private:
   actionlib::SimpleActionServer<fetch_grasp_suggestion::ExecuteGraspAction> execute_grasp_server_;
   actionlib::SimpleActionServer<fetch_grasp_suggestion::PresetMoveAction> prepare_robot_server_;
   actionlib::SimpleActionServer<fetch_grasp_suggestion::PresetMoveAction> drop_pose_server_;
+  actionlib::SimpleActionServer<fetch_grasp_suggestion::PresetJointsMoveAction> preset_pose_server_;
   actionlib::SimpleActionClient<control_msgs::GripperCommandAction> gripper_client_;
 
   boost::mutex object_mutex_;

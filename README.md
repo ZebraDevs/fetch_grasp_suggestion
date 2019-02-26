@@ -54,7 +54,7 @@ This package is designed to work with [rail_grasp_calculation](https://github.co
 [here](https://github.com/GT-RAIL/rail_grasp_calculation)
 
 ## Example Usage
-The following sections will function as short tutorials to get the system up and running for specific use cases.  
+The following sections will function as short tutorials to get the system up and running for specific use cases.
 
 ### Grasping individual objects
 The primary purpose of this package is to facilitate object grasping.  The package includes a demo file to
@@ -70,25 +70,25 @@ pick-and-place.  Both methods are explained below.
    CLASSIFIER for the rest of these instructions.  If you haven't trained your own classifier, you can skip this
    step and use the default pre-trained classifier.
    1. Run MoveIt! on the fetch with: `roslaunch fetch_moveit_config move_group.launch allow_active_sensing:=true`
-   1. Launch the grasping demo with: `roslaunch fetch_grasp_suggestion grasp_suggestion_testing.launch 
+   1. Launch the grasping demo with: `roslaunch fetch_grasp_suggestion grasp_suggestion_testing.launch
    cloud_topic:=CLOUD classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head
    camera and the pre-trained classifier.
 1. Run the rviz interface with: `roslaunch fetch_grasp_suggestion grasp_suggestion_testing_frontend.launch`
 1. Call the segmentation service to update the scene objects.
    * This demo starts [rail_segmentation](http://wiki.ros.org/rail_segmentation) by default.  You can call the
-   segmenter from the command line with `rosservice call rail_segmentation/segment {}`  
+   segmenter from the command line with `rosservice call rail_segmentation/segment {}`
    * If you'd like to use different object segmentation, see
    [alternative segmentation](#connecting-alternative-object-segmentation) below.
 1. Call grasp suggestion by publishing to an object index to the `test_grasp_suggestion/grasp_object` topic.  For
-example, to grasp segmented object 0 from the command line, use: `rostopic pub /test_grasp_suggestion/grasp_object 
+example, to grasp segmented object 0 from the command line, use: `rostopic pub /test_grasp_suggestion/grasp_object
 std_msgs/Int32 "data: 0"`
    * To use methods other than pairwise ranking (note, these generally don't perform as well and were only included for
    evaluation), just change the topic you're publishing to:
-     * For grasps ranked by heuristics only: `rostopic pub /test_grasp_suggestion/grasp_object_heuristic std_msgs/Int32 
+     * For grasps ranked by heuristics only: `rostopic pub /test_grasp_suggestion/grasp_object_heuristic std_msgs/Int32
      "data: 0"`
-     * For grasps from the AGILE pipeline: `rostopic pub /test_grasp_suggestion/grasp_object_agile std_msgs/Int32 
+     * For grasps from the AGILE pipeline: `rostopic pub /test_grasp_suggestion/grasp_object_agile std_msgs/Int32
      "data: 0"`
-     * For a random antipodal grasp: `rostopic pub /test_grasp_suggestion/grasp_object_random std_msgs/Int32 
+     * For a random antipodal grasp: `rostopic pub /test_grasp_suggestion/grasp_object_random std_msgs/Int32
      "data: 0"`
 1. Executing the final grasp will require user input for safety.  Follow the instructions on the command line to execute
 the grasp.
@@ -124,7 +124,7 @@ this functionality into a larger system.  Both methods are explained below.
    CLASSIFIER for the rest of these instructions.  If you haven't trained your own classifier, you can skip this
    step and use the default pre-trained classifier.
    1. Run MoveIt! on the fetch with: `roslaunch fetch_moveit_config move_group.launch allow_active_sensing:=true`
-   1. Launch the cluttered scene demo with: `roslaunch fetch_grasp_suggestion cluttered_scene_demo.launch 
+   1. Launch the cluttered scene demo with: `roslaunch fetch_grasp_suggestion cluttered_scene_demo.launch
    cloud_topic:=CLOUD classifier_file:=CLASSIFIER`, setting parameters only if you don't want to use the Fetch head
    camera and the pre-trained classifier.
 1. Run the rviz interface with: `roslaunch fetch_grasp_suggestion cluttered_scene_demo_frontend.launch`
@@ -184,7 +184,7 @@ anywhere by passing an absolute path to the `classifier_file` parameter.
 CLASSIFIERS for the rest of these instructions.
 1. Identify the file name and path of your training data, which will be referred to as DATA for the rest of these
 instructions.
-1. Call the classifier training node with: `rosrun fetch_grasp_suggestion train_classifier.py 
+1. Call the classifier training node with: `rosrun fetch_grasp_suggestion train_classifier.py
 _classifier_types:=CLASSIFIERS _file_name:=DATA`
 
 Examples:
@@ -219,117 +219,117 @@ segmentation topic.
 
 ## Detailed node and script documentation
 The package contains a set of ROS nodes organized as shown in the diagram below.  Each section is documented separately
-in the following subsections.  
+in the following subsections.
 ![Node Diagram](readme/diagram.png)
 
 ### Primary ROS nodes
 The following nodes handle the core functionality of this package, including grasp suggestion and pairwise
 classification.
 
-#### suggeter
+#### suggester
 This node interfaces with grasp sampling and ranking to get a set of grasp poses with heuristics, then uses this
 information to re-rank the grasps by calling the pairwise ranking model on every grasp pair.  This node also receives
 feedback on grasps selected by human operators to create new training examples for the pairwise ranking model.  Relevant
 topics, services, action clients, and action servers, and parameters are as follows:
 * **Subscribers**
-  * `/head_camera/depth_registered/points`([pcl/PointCloud<pcl/PointXYZRGB>](http://wiki.ros.org/pcl_ros))  
+  * `/head_camera/depth_registered/points`([pcl/PointCloud<pcl/PointXYZRGB>](http://wiki.ros.org/pcl_ros))
   Point cloud stream of the entire environment, used for updating the scene context
   for grasp suggestion.  The point cloud subscribed to can be changed by setting the `cloud_topic` param.
-  * `~/grasp_feedback`([rail_manipulation_msgs/GraspFeedback](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/msg/GraspFeedback.msg))  
+  * `~/grasp_feedback`([rail_manipulation_msgs/GraspFeedback](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/msg/GraspFeedback.msg))
   Feedback for grasp selection.  Publish to this topic when the user selects a grasp
   to generate new training data for the pairwise ranking model.
-  * `/rail_segmentation/segmented_objects`([rail_manipulation_msgs/SegmentedObjectList](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/msg/SegmentedObjectList.msg))  
+  * `/rail_segmentation/segmented_objects`([rail_manipulation_msgs/SegmentedObjectList](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/msg/SegmentedObjectList.msg))
   (DEPRECATED) Incoming segmented objects, for use with the action server
   grasp suggestion pipeline.  The topic can be changed to any other source of segmented objects by setting the
   `segmentation_topic` param.  This has been deprecated in favor of the service grasp suggestion pipeline, which is
   recommended instead.
 * **Publishers**
-  * `~/grasps`([fetch_grasp_suggestion/RankedGraspList](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/msg/RankedGraspList.msg))  
+  * `~/grasps`([fetch_grasp_suggestion/RankedGraspList](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/msg/RankedGraspList.msg))
   (DEPRECATED) Topic for publishing grasps after performing grasp suggestion with
-  the action server pipeline.  This has been deprecated in favor of the service grasp suggestion pipeline, which is 
+  the action server pipeline.  This has been deprecated in favor of the service grasp suggestion pipeline, which is
   recommended instead.
 * **Service Clients**
-  * `/executor/clear_objects`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))  
+  * `/executor/clear_objects`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))
   Clear collision objects from the scene.  Supports the (optional) grasp executor
   node included in this package.
-  * `/executor/add_object`([fetch_grasp_suggestion/AddObject](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/srv/AddObject.srv))  
+  * `/executor/add_object`([fetch_grasp_suggestion/AddObject](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/srv/AddObject.srv))
   Add a collision object to the scene.  Supports the (optional) grasp executor node
   included in this package.
-  * `/classify_all`([fetch_grasp_suggestion/ClassifyAll](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/srv/ClassifyAll.srv))  
+  * `/classify_all`([fetch_grasp_suggestion/ClassifyAll](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/srv/ClassifyAll.srv))
   Perform pairwise classification for all pairs of grasps.  Connects to the
   classifier node included in this package.
 * **Service Servers**
-  * `~/suggest_grasps`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))  
+  * `~/suggest_grasps`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))
   Given an object point cloud, sample grasps and get an initial ranking for them by
   calculating grasp heuristics.
-  * `~/suggest_grasps_scene`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))  
+  * `~/suggest_grasps_scene`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))
   Given a scene point cloud, sample grasps and get an initial ranking for them by
   calculating grasp heuristics.
-  * `~/suggest_grasps_baseline`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))  
+  * `~/suggest_grasps_baseline`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))
   Given a point cloud, sample grasps classified as antipodal using the full AGILE
   pipeline.  This is only included for evaluation purposes, as the suggest_grasps or suggest_grasps_scene servers
   produce better results.
-  * `~/suggest_grasps_random`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))  
+  * `~/suggest_grasps_random`([rail_manipulation_msgs/SuggestGrasps](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/SuggestGrasps.srv))
   Given an object point cloud, sample antipodal grasps with a random ordering.  This
   is included only for baseline testing, and should not be used for any real applications!
-  * `~/pairwise_rank`([rail_manipulation_msgs/PairwiseRank](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/PairwiseRank.srv))  
+  * `~/pairwise_rank`([rail_manipulation_msgs/PairwiseRank](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/PairwiseRank.srv))
   Re-rank the most recently computed grasp list for an object using the pairwise
   ranking model.
-  * `~/pairwise_rank_scene`([rail_manipulation_msgs/PairwiseRank](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/PairwiseRank.srv))  
+  * `~/pairwise_rank_scene`([rail_manipulation_msgs/PairwiseRank](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/srv/PairwiseRank.srv))
   Re-rank the most recently computed grasp list for a scene using the pairwise
   ranking model.
 * **Action Clients**
-  * `/rail_agile/sample_grasps`([rail_grasp_calculation_msgs/SampleGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/SampleGrasps.action))  
+  * `/rail_agile/sample_grasps`([rail_grasp_calculation_msgs/SampleGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/SampleGrasps.action))
   Antipodal grasp sampler using AGILE.  If you'd like to change the source for the
   initial sampled grasps, you can remap this topic to any other grasp sampling action server that implements the
   rail_grasp_calculation_msgs SampleGraspsAction.
-  * `/rail_agile/sample_classify_grasps`([rail_grasp_calculation_msgs/SampleGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/SampleGrasps.action))  
+  * `/rail_agile/sample_classify_grasps`([rail_grasp_calculation_msgs/SampleGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/SampleGrasps.action))
   Full AGILE grasp sampling pipeline.  Only required for the
   `~/suggest_grasps_baseline` service.
-  * `/grasp_sampler/rank_grasps_object`([rail_grasp_calculation_msgs/RankGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/RankGrasps.action))  
+  * `/grasp_sampler/rank_grasps_object`([rail_grasp_calculation_msgs/RankGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/RankGrasps.action))
   Calculate heuristics and rank grasps for an object using rail_grasp_calculation.
-  * `/grasp_sampler/rank_grasps_scene`([rail_grasp_calculation_msgs/RankGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/RankGrasps.action))  
+  * `/grasp_sampler/rank_grasps_scene`([rail_grasp_calculation_msgs/RankGraspsAction](https://github.com/GT-RAIL/rail_grasp_calculation/blob/master/rail_grasp_calculation_msgs/action/RankGrasps.action))
   Calculate heuristics and rank grasps for a scene using rail_grasp_calculation.
 * **Action Servers**
-  * `~/get_grasp_suggestions`([fetch_grasp_suggestion/SuggestGraspsAction](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/action/SuggestGrasps.action))  
+  * `~/get_grasp_suggestions`([fetch_grasp_suggestion/SuggestGraspsAction](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/action/SuggestGrasps.action))
   (DEPRECATED) Sample grasps and calculate an initial ranking based on grasp
   heuristics by action server.  This is deprecated in favor of the service implementation `~/suggest_grasps`, which is
   recommended instead.
 * **Parameters**
-  * `segmentation_topic`(string, "rail_segmentation/segmented_objects")  
+  * `segmentation_topic`(string, "rail_segmentation/segmented_objects")
   Topic for incoming segmented object data.
-  * `cloud_topic`(string, "head_camera/depth_registered/points")  
+  * `cloud_topic`(string, "head_camera/depth_registered/points")
   Point cloud topic to update the scene where grasping is taking place.
-  * `file_name`(string, "grasp_data")  
+  * `file_name`(string, "grasp_data")
   Name of a csv text file to save new training data to.
-  * `min_grasp_depth`(double, -0.03)  
+  * `min_grasp_depth`(double, -0.03)
   Minimum depth offset (in m) to adjust a suggested grasp by for execution.
-  * `max_grasp_depth`(double, 0.03)  
+  * `max_grasp_depth`(double, 0.03)
   Maximum depth offset (in m) to adjust a suggested grasp by for execution.
- 
+
 #### classifier_node.py
 This node implements the pairwise ranking model and exposes it as a service.
 * **Service Servers**
-  * `~/classify_grasp_pair`([fetch_grasp_suggestion/ClassifyGraspPair](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/srv/ClassifyGraspPair.srv))  
+  * `~/classify_grasp_pair`([fetch_grasp_suggestion/ClassifyGraspPair](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/srv/ClassifyGraspPair.srv))
   Perform a single classification for a pair of grasps.  If you're classifying more
   than one grasp, use the `~/classify_all` service instead, as it is very slow to re-instantiate the model for every
   classification instance.
-  * `~/classify_all`([fetch_grasp_suggestion/ClassifyAll](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/srv/ClassifyAll.srv))  
+  * `~/classify_all`([fetch_grasp_suggestion/ClassifyAll](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/srv/ClassifyAll.srv))
   Perform pairwise classification on all pairs of grasps, returning a re-ordered
   grasp list as a result.
 * **Parameters**
-  * `~/file_name`(string, "decision_tree.pkl")  
+  * `~/file_name`(string, "decision_tree.pkl")
   Filename for an already-trained classifier model.  We include a pre-trained
   random forest model, and you can generate new models using the `train_classifier.py` script.  Filenames can be
   relative to the package path or absolute.
   * `~/n_jobs`(int, 1)  For classifiers that support this parameter, the number of jobs to use when performing
   classification.  Passing in -1 will use as much processing as is available.
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  * `~/interpret_trees`(bool, false)  
+  * `~/interpret_trees`(bool, false)
   Flag for generating a plot detailing the contributions of each feature over a set of classifications, only valid for
   decision tree and random forest classifiers.  NOTE: This is buggy, in that it tends to crash after generating plots
   repeatedly, so leave this off unless you specifically want plots to be generated.
-  * `~/object_feature_size`(int, 6)  
+  * `~/object_feature_size`(int, 6)
   The length of the feature vector describing only the object (not the difference)
   of grasp heuristics).
 
@@ -340,21 +340,23 @@ interactive marker server implementation for grasp execution and generation of n
 #### executor
 An optional standalone grasp executor for the Fetch robot.  Relevant services and actions are as follows:
 * **Action Servers**
-  * `~/execute_grasp`([fetch_grasp_suggestion/ExecuteGraspAction](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/action/ExecuteGrasp.action))  
+  * `~/execute_grasp`([fetch_grasp_suggestion/ExecuteGraspAction](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/action/ExecuteGrasp.action))
   Execute a grasp pose, which involves moving to the approach angle, opening the gripper, moving in a straight-line
   trajectory to the grasp pose, closing the gripper, and lifting the object.
-  * `~/prepare_robot`([fetch_grasp_suggestion/PresetMoveAction](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/action/PresetMove.action))  
+  * `~/prepare_robot`([fetch_grasp_suggestion/PresetMoveAction](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/action/PresetMove.action))
   Move the arm to a "ready to grasp" pose that's out of the way of the camera.
-  * `~/drop_position`([fetch_grasp_suggestion/PresetMoveAction](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/action/PresetMove.action))  
-  Move the arm to a preset position to drop an object.
+  * `~/drop_position`([fetch_grasp_suggestion/PresetMoveAction](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/action/PresetMove.action))
+  Move the arm to a predefined position to drop an object.
+  * `~/preset_position`([fetch_grasp_suggestion/PresetMoveAction](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/action/PresetJointsMove.action))
+  Move the arm to a preset position that is defined in the message. The message is a subset of [sensor_msgs/JointState](http://docs.ros.org/indigo/api/sensor_msgs/html/msg/JointState.html) alongwith a velocity scaling factor.
 * **Service Servers**
-  * `~/add_object`([fetch_grasp_suggestion/AddObject](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/srv/AddObject.srv))  
+  * `~/add_object`([fetch_grasp_suggestion/AddObject](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/srv/AddObject.srv))
   Add an object to the MoveIt! collision scene.
-  * `~/clear_objects`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))  
+  * `~/clear_objects`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))
   Remove all collision objects from the MoveIt! collision scene.
-  * `~/detach_objects`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))  
+  * `~/detach_objects`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))
   Detach any collision objects currently attached to the gripper.
-  * `~/drop_object`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))  
+  * `~/drop_object`([std_srvs/Empty](http://docs.ros.org/api/std_srvs/html/srv/Empty.html))
   Open the gripper and remove all collision objects.
 
 
@@ -362,28 +364,28 @@ An optional standalone grasp executor for the Fetch robot.  Relevant services an
 (DEPRECATED) An optional interactive marker server used for collecting new training examples.  This is deprecated in
 favor of a better interface implementation in fetch_pbd, which is recommended instead.
 * **Subscribers**
-  * `/suggester/grasps`([fetch_grasp_suggestion/RankedGraspList](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/msg/RankedGraspList.msg))  
+  * `/suggester/grasps`([fetch_grasp_suggestion/RankedGraspList](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/msg/RankedGraspList.msg))
   Subscriber for newly calculated and ranked grasps, coming from the `suggester`
   node by default.  The topic can be changed by setting the `grasps_topic` parameter.
-  * `/rail_segmentation/segmented_objects`([rail_manipulation_msgs/SegmentedObjectList](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/msg/SegmentedObjectList.msg))  
+  * `/rail_segmentation/segmented_objects`([rail_manipulation_msgs/SegmentedObjectList](https://github.com/GT-RAIL/rail_manipulation_msgs/blob/master/msg/SegmentedObjectList.msg))
   Segmented objects subscriber.  Object information is used when generating new
   training examples.  This topic can be changed by setting the `segmentation_topic` parameter.
 * **Service Servers**
-  * `~/cycle_grasps`([fetch_grasp_suggestion/CycleGrasps](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/srv/CycleGrasps.srv))  
+  * `~/cycle_grasps`([fetch_grasp_suggestion/CycleGrasps](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/srv/CycleGrasps.srv))
   Advance the currently displayed grasp forward or backward.
 * **Action Clients**
-  * `/executor/execute_grasp`([fetch_grasp_suggestion/ExecuteGraspAction](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/action/ExecuteGrasp.action))  
+  * `/executor/execute_grasp`([fetch_grasp_suggestion/ExecuteGraspAction](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/action/ExecuteGrasp.action))
   Connection to the standalone grasp `executor` included in this package.
 * **Action Servers**
-  * `~/execute_selected_grasp`([fetch_grasp_suggestion/ExecuteSelectedGraspAction](https://github.com/fetchrobotics/fetch_grasp_suggestion/blob/master/fetch_grasp_suggestion/action/ExecuteSelectedGraspAction.action))  
+  * `~/execute_selected_grasp`([fetch_grasp_suggestion/ExecuteSelectedGraspAction](https://github.com/GT-RAIL/fetch_grasp_suggestion/blob/indigo-devel/fetch_grasp_suggestion/action/ExecuteSelectedGraspAction.action))
   Execute the currently selected grasp and create new pairwise training examples
   based on the grasp executed and the grasps seen by the user.
 * **Parameters**
-  * `~/segmentation_topic`(string, "rail_sgementation/segmented_objects")  
+  * `~/segmentation_topic`(string, "rail_sgementation/segmented_objects")
   Topic for subscribing to segmented objects.
-  * `~/grasps_topic`(string, "suggester/grasps")  
+  * `~/grasps_topic`(string, "suggester/grasps")
   Topic for subscribing to new calculated grasps
-  * `~/file_name`(string, "grasp_data")  
+  * `~/file_name`(string, "grasp_data")
   Filename of a .csv text file to save new training data to.
 
 ### Demo ROS nodes
@@ -400,22 +402,22 @@ Each method is called by publishing a [std_msgs/Int32](http://docs.ros.org/api/s
 with the index of the object to be grasped to the appropriate test topic.  Relevant topics and parameters are as
 follows:
 * **Subscribers**
-  * `~/grasp_object`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))  
+  * `~/grasp_object`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))
   Grasp an object using the pairwise ranking method.
-  * `~/grasp_object_heuristic`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))  
+  * `~/grasp_object_heuristic`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))
   Grasp an object using ranks derived directly from the heuristics.
-  * `~/grasp_object_agile`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))  
+  * `~/grasp_object_agile`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))
   Grasp an object using the full AGILE pipeline.
-  * `~/grasp_object_random`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))  
+  * `~/grasp_object_random`([std_msgs/Int32](http://docs.ros.org/api/std_msgs/html/msg/Int32.html))
   Grasp an object using a random antipodal grasp.
 * **Publishers**
-  * `~/debug`([geometry_msgs/PoseStamped](http://docs.ros.org/api/geometry_msgs/html/msg/PoseStamped.html))  
+  * `~/debug`([geometry_msgs/PoseStamped](http://docs.ros.org/api/geometry_msgs/html/msg/PoseStamped.html))
   Grasp pose to be executed.  It's recommended to display this topic in rviz when
   monitoring grasp execution.
 * **Parameters**
-  * `~/segmentation_topic`(string, "rail_sgementation/segmented_objects")  
+  * `~/segmentation_topic`(string, "rail_sgementation/segmented_objects")
   Topic for subscribing to segmented objects.
-  * `~/debug`(bool, true)  
+  * `~/debug`(bool, true)
   Publish the pose to be executed if true.
 
 #### cluttered_scene_demo
@@ -425,11 +427,11 @@ snapshot, sampling and ranking grasps over the point cloud snapshot, executing t
 position off to the side of the robot, and dropping the object.  Starting the demo requires publishing an empty
 message to a topic after the node is running.  Relevant topics and parameters are as follows:
 * **Subscribers**
-  * `~/run_demo`([std_msgs/Empty](http://docs.ros.org/indigo/api/std_msgs/html/msg/Empty.html))  
+  * `~/run_demo`([std_msgs/Empty](http://docs.ros.org/indigo/api/std_msgs/html/msg/Empty.html))
   Execute the demo.  As with `test_grasp_suggestion`, each grasp will still require keyboard input before execution,
   for safety.
 * **Parameters**
-  * `~/cloud_topic`(string, "head_camera/depth_registered/points")  
+  * `~/cloud_topic`(string, "head_camera/depth_registered/points")
   Topic of the point cloud that includes the scene to be cleared.
 
 ### Classifier training and evaluation scripts
@@ -440,12 +442,12 @@ node, and can be run with rosrun to set parameters.
 This is the main script for training a new classifier and saving the model.  Newly trained classifiers will be saved
 in the current directory of the terminal in which the script was executed.
 * **Parameters**
-  * `~/classifier_types` (string[], ["decision_tree"])  
+  * `~/classifier_types` (string[], ["decision_tree"])
   The types of classifiers to train models for.  Supported classifiers include: `["decision_tree", "random_forest",
   "ada_boost", "knn", "svm", "logistic_regression", "nn1", "nn2"]`, where `"nn1"` is a neural network with a single
   hidden layer, and `"nn2"` is a neural network with two hidden layers.  You can also pass in "all" to train one of
   each supported classifier.
-  * `~/file_name` (string, "grasp_data.csv")  
+  * `~/file_name` (string, "grasp_data.csv")
   The filename containing the training data.  File paths can be relative or absolute.  If the path is relative, the
   script assumes the file is located in the directory (location of fetch_grasp_suggestion)/data/grasp_preferences/.
 
@@ -453,19 +455,19 @@ in the current directory of the terminal in which the script was executed.
 Compare the performance of different types of classifiers with various tests and metrics, including k-folds cross
 validation, detailed results on a train/test split, learning curve plots, ROC curves, and precision-recall curves.
 * **Parameters**
-  * `~/classifier_types` (string[], ["decision_tree"])  
+  * `~/classifier_types` (string[], ["decision_tree"])
   The types of classifiers to test.  Supported classifiers include: `["decision_tree", "random_forest",
   "ada_boost", "knn", "svm", "logistic_regression", "nn1", "nn2"]`, where `"nn1"` is a neural network with a single
   hidden layer, and `"nn2"` is a neural network with two hidden layers.  You can also pass in "all" to evaluate
   every supported classifier.
-  * `~/file_name` (string, "grasp_data.csv")  
+  * `~/file_name` (string, "grasp_data.csv")
   The filename containing all of the data, which will be used to create training and testing sets.  File paths can be
   relative or absolute.  If the path is relative, the script assumes the file is located in the directory (location of
   fetch_grasp_suggestion)/data/grasp_preferences/.
-  * `~/split` (double, 0.4)  
+  * `~/split` (double, 0.4)
   Ratio used to split the data into a train and test set.  The value corresponds to the fraction of the total data to be
   used for the test set.
-  * `~/generate_plots` (bool, false)  
+  * `~/generate_plots` (bool, false)
   Flag for generating plots.  If true, the script will generate training curves, ROC curves, and precision-recall curves
   for each classifier specified in `classifier_types`.  Otherwise, the script will only provide the accuracy from
   cross validation and the detailed classification report over the train/test split in the terminal.
@@ -473,13 +475,13 @@ validation, detailed results on a train/test split, learning curve plots, ROC cu
 #### cross_validate_params.py
 Perform cross validation to examine the effects of different model parameters for a given classifier type.
 * **Parameters**
-  * `~/classifier_types` (string[], ["decision_tree"])  
+  * `~/classifier_types` (string[], ["decision_tree"])
   The types of classifiers to use.  A separate cross-validation procedure will be carried out for each classifier type,
   with a set of parameters appropriate to that classifier type.  Supported classifiers include: `["decision_tree",
   "random_forest", "ada_boost", "knn", "svm", "logistic_regression", "nn1", "nn2"]`, where `"nn1"` is a neural network
   with a single hidden layer, and `"nn2"` is a neural network with two hidden layers.  You can also pass in "all" to
   cross validate parameters for every supported classifier.
-  * `~/file_name` (string, "grasp_data.csv")  
+  * `~/file_name` (string, "grasp_data.csv")
   The filename containing all of the data, which will be used for training and testing during cross-validation.  File
   paths can be relative or absolute.  If the path is relative, the script assumes the file is located in the directory
   (location of fetch_grasp_suggestion)/data/grasp_preferences/.
